@@ -38,11 +38,19 @@ export default async function AdminPage() {
     <main className="mx-auto w-full max-w-xl px-4 py-8">
       <Card>
         <CardHeader>
-          <CardTitle>{isAdmin ? "Admin" : "Not an admin"}</CardTitle>
+          <CardTitle>
+            {error ? "Could not check access" : isAdmin ? "Admin" : "Not an admin"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm">
           <p>Signed in as {user.email}.</p>
-          {isAdmin ? (
+          {error ? (
+            // A failed lookup is not the same as "not an admin", so say so.
+            <p>
+              Something went wrong while checking whether this account is an
+              admin. Please refresh the page and try again.
+            </p>
+          ) : isAdmin ? (
             <p>
               You can manage the schedule here. Adding, editing and deleting
               collections comes next.
