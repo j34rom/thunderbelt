@@ -1,6 +1,6 @@
 # PHINMA AI Builder — team template
 
-**Your live URL:** https://thunderbelt.vercel.app/
+**Your live URL:** https://thunderbelt-jgm3.vercel.app/
 
 This is your team's starting point. It is already a working Next.js app
 that deploys to Vercel. You will delete the starter page and build your

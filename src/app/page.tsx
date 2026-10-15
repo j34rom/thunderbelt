@@ -10,15 +10,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  // TEMP DIAGNOSTIC: show the setup error on the page instead of a bare 500.
+  // If the site is not configured yet (for example the Supabase variables
+  // are missing in Vercel), show a plain message instead of a bare 500.
   let supabase;
   try {
     supabase = await createClient();
-  } catch (e) {
+  } catch {
     return (
       <main className="mx-auto w-full max-w-xl px-4 py-8">
         <p className="text-sm">
-          {e instanceof Error ? e.message : "Setup error."}
+          The schedule is not available right now. Please try again later.
         </p>
       </main>
     );
