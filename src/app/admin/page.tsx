@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { COLLECTION_TYPE_LABELS, formatDateTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { signOut } from "./actions";
+import { AddCollectionForm } from "./add-collection-form";
 
 export const dynamic = "force-dynamic";
 
@@ -34,8 +36,21 @@ export default async function AdminPage() {
 
   const isAdmin = !error && adminRow !== null;
 
+  // Only admins need the areas and the collections.
+  const { data: areas } = isAdmin
+    ? await supabase.from("areas").select("id, name").order("name")
+    : { data: null };
+  const { data: collections } = isAdmin
+    ? await supabase
+        .from("collections")
+        .select("id, area_id, type, place, starts_at, note")
+        .order("starts_at", { ascending: false })
+    : { data: null };
+
+  const areaName = new Map((areas ?? []).map((area) => [area.id, area.name]));
+
   return (
-    <main className="mx-auto w-full max-w-xl px-4 py-8">
+    <main className="mx-auto w-full max-w-xl space-y-6 px-4 py-8">
       <Card>
         <CardHeader>
           <CardTitle>
@@ -50,17 +65,12 @@ export default async function AdminPage() {
               Something went wrong while checking whether this account is an
               admin. Please refresh the page and try again.
             </p>
-          ) : isAdmin ? (
-            <p>
-              You can manage the schedule here. Adding, editing and deleting
-              collections comes next.
-            </p>
-          ) : (
+          ) : !isAdmin ? (
             <p>
               This account is not on the admin list, so it cannot change the
               schedule. Ask the team to add it.
             </p>
-          )}
+          ) : null}
           <form action={signOut}>
             <Button type="submit" variant="outline">
               Sign out
@@ -68,6 +78,47 @@ export default async function AdminPage() {
           </form>
         </CardContent>
       </Card>
+
+      {isAdmin && (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Add a collection</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddCollectionForm areas={areas ?? []} />
+            </CardContent>
+          </Card>
+
+          <section aria-label="All collections">
+            <h2 className="text-lg font-semibold tracking-tight">
+              All collections
+            </h2>
+            {!collections || collections.length === 0 ? (
+              <p className="mt-3 text-sm">Nothing added yet.</p>
+            ) : (
+              <ul className="mt-3 space-y-3">
+                {collections.map((collection) => (
+                  <li key={collection.id}>
+                    <Card>
+                      <CardContent className="space-y-1 pt-6 text-sm">
+                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                          {COLLECTION_TYPE_LABELS[collection.type] ??
+                            collection.type}{" "}
+                          · {areaName.get(collection.area_id) ?? "Unknown area"}
+                        </p>
+                        <p className="font-semibold">{collection.place}</p>
+                        <p>{formatDateTime(collection.starts_at)}</p>
+                        {collection.note && <p>{collection.note}</p>}
+                      </CardContent>
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      )}
     </main>
   );
 }

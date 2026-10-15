@@ -5,16 +5,20 @@ the admin page. Nobody else can.
 
 **Blocked by:** 02
 
-**Status:** todo
+**Status:** done
 
-- [ ] The `admins` table exists with Row Level Security on. A signed-in
+- [x] The `admins` table exists with Row Level Security on. A signed-in
       user can read only their own row; nobody can write through the
       website.
-- [ ] Public sign-ups are turned off in Supabase, the team's admin
+- [x] Public sign-ups are turned off in Supabase, the team's admin
       accounts are created in the dashboard, and each is listed in
       `admins` through SQL.
-- [ ] The admin sign-in screen accepts email and password.
-- [ ] The admin page can only be opened by a signed-in admin; anyone
+- [x] The admin sign-in screen accepts email and password.
+- [x] The admin page can only be opened by a signed-in admin; anyone
       else is sent to the sign-in screen.
-- [ ] Sign out works.
-- [ ] Works on the live URL
+- [x] Sign out works.
+- [x] Works on the live URL
+
+**Follow-up (team):** only one admin account is listed in `admins` so
+far. Add the other four with the insert in
+`supabase/sql/005-create-admins.sql`, then check each can sign in.

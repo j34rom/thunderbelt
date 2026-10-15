@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
+  COLLECTION_TYPE_LABELS,
+  formatDate,
+  formatDateTime,
+} from "@/lib/format";
+import {
   Card,
   CardContent,
   CardHeader,
@@ -15,22 +20,6 @@ import {
 // The data lives in the database and can change, and the build should not
 // need database keys just to succeed.
 export const dynamic = "force-dynamic";
-
-const COLLECTION_LABELS = {
-  pickup: "Pick-up",
-  dropoff: "Drop-off",
-} as const;
-
-// Times are shown in Philippine time, whatever the server's clock says.
-const dateTime = new Intl.DateTimeFormat("en-PH", {
-  dateStyle: "full",
-  timeStyle: "short",
-  timeZone: "Asia/Manila",
-});
-const dateOnly = new Intl.DateTimeFormat("en-PH", {
-  dateStyle: "medium",
-  timeZone: "Asia/Manila",
-});
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   // If the site is not configured yet (for example the Supabase variables
@@ -128,18 +117,16 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                   <Card>
                     <CardHeader>
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                        {COLLECTION_LABELS[
-                          collection.type as keyof typeof COLLECTION_LABELS
-                        ] ?? collection.type}
+                        {COLLECTION_TYPE_LABELS[collection.type] ??
+                          collection.type}
                       </p>
                       <CardTitle>{collection.place}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1 text-sm">
-                      <p>{dateTime.format(new Date(collection.starts_at))}</p>
+                      <p>{formatDateTime(collection.starts_at)}</p>
                       {collection.note && <p>{collection.note}</p>}
                       <p className="text-xs text-muted-foreground">
-                        Last updated{" "}
-                        {dateOnly.format(new Date(collection.updated_at))}
+                        Last updated {formatDate(collection.updated_at)}
                       </p>
                     </CardContent>
                   </Card>
