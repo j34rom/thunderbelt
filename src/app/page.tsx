@@ -1,15 +1,38 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-// Public home page. For now it lists the areas stored in the database.
-// Ticket 03 turns each area into a link that shows its collections.
+// Public home page. A resident picks an area and sees its upcoming
+// pick-ups and drop-offs. The chosen area is kept in the address
+// (?area=...) so it works on any phone and can be shared as a link.
 
 // Build the page when someone visits it, not when the site is built.
-// The areas live in the database and can change, and the build should not
+// The data lives in the database and can change, and the build should not
 // need database keys just to succeed.
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+const COLLECTION_LABELS = {
+  pickup: "Pick-up",
+  dropoff: "Drop-off",
+} as const;
+
+// Times are shown in Philippine time, whatever the server's clock says.
+const dateTime = new Intl.DateTimeFormat("en-PH", {
+  dateStyle: "full",
+  timeStyle: "short",
+  timeZone: "Asia/Manila",
+});
+const dateOnly = new Intl.DateTimeFormat("en-PH", {
+  dateStyle: "medium",
+  timeZone: "Asia/Manila",
+});
+
+export default async function Home({ searchParams }: PageProps<"/">) {
   // If the site is not configured yet (for example the Supabase variables
   // are missing in Vercel), show a plain message instead of a bare 500.
   let supabase;
@@ -24,10 +47,25 @@ export default async function Home() {
       </main>
     );
   }
+
   const { data: areas, error } = await supabase
     .from("areas")
     .select("id, name")
     .order("name");
+
+  // Only trust an area id that is really in our list.
+  const { area: areaParam } = await searchParams;
+  const areaId = typeof areaParam === "string" ? areaParam : undefined;
+  const selected = areas?.find((area) => area.id === areaId);
+
+  const { data: collections, error: collectionsError } = selected
+    ? await supabase
+        .from("collections")
+        .select("id, type, place, starts_at, note, updated_at")
+        .eq("area_id", selected.id)
+        .gte("starts_at", new Date().toISOString())
+        .order("starts_at")
+    : { data: null, error: null };
 
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-8">
@@ -40,7 +78,7 @@ export default async function Home() {
 
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Areas</CardTitle>
+          <CardTitle>Your area</CardTitle>
         </CardHeader>
         <CardContent>
           {error ? (
@@ -52,12 +90,65 @@ export default async function Home() {
           ) : (
             <ul className="space-y-2">
               {areas.map((area) => (
-                <li key={area.id}>{area.name}</li>
+                <li key={area.id}>
+                  <Link
+                    href={`/?area=${area.id}`}
+                    aria-current={area.id === selected?.id ? "page" : undefined}
+                    className={`block rounded-md border border-border px-3 py-3 text-sm ${
+                      area.id === selected?.id ? "font-semibold" : ""
+                    }`}
+                  >
+                    {area.name}
+                  </Link>
+                </li>
               ))}
             </ul>
           )}
         </CardContent>
       </Card>
+
+      {selected && (
+        <section className="mt-6" aria-label={`Collections for ${selected.name}`}>
+          <h2 className="text-lg font-semibold tracking-tight">
+            Upcoming in {selected.name}
+          </h2>
+
+          {collectionsError ? (
+            <p className="mt-3 text-sm">
+              Could not load the schedule right now. Please try again later.
+            </p>
+          ) : !collections || collections.length === 0 ? (
+            <p className="mt-3 text-sm">
+              No collections posted for this area yet.
+            </p>
+          ) : (
+            <ul className="mt-3 space-y-3">
+              {collections.map((collection) => (
+                <li key={collection.id}>
+                  <Card>
+                    <CardHeader>
+                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        {COLLECTION_LABELS[
+                          collection.type as keyof typeof COLLECTION_LABELS
+                        ] ?? collection.type}
+                      </p>
+                      <CardTitle>{collection.place}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-1 text-sm">
+                      <p>{dateTime.format(new Date(collection.starts_at))}</p>
+                      {collection.note && <p>{collection.note}</p>}
+                      <p className="text-xs text-muted-foreground">
+                        Last updated{" "}
+                        {dateOnly.format(new Date(collection.updated_at))}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
     </main>
   );
 }
