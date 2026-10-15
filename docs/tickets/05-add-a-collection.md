@@ -5,13 +5,13 @@ the Schedule page. This is the three-minute demo moment.
 
 **Blocked by:** 03, 04
 
-**Status:** todo
+**Status:** done
 
-- [ ] The admin page has a form for area, type (pick-up or drop-off),
+- [x] The admin page has a form for area, type (pick-up or drop-off),
       place, date and time, and an optional note.
-- [ ] Only admins can insert collections, enforced by a Row Level
+- [x] Only admins can insert collections, enforced by a Row Level
       Security policy.
-- [ ] A new collection appears on the Schedule page for its area.
-- [ ] The admin page lists all collections.
-- [ ] A signed-out visitor cannot add one.
-- [ ] Works on the live URL
+- [x] A new collection appears on the Schedule page for its area.
+- [x] The admin page lists all collections.
+- [x] A signed-out visitor cannot add one.
+- [x] Works on the live URL
