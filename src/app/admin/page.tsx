@@ -1,6 +1,10 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { COLLECTION_TYPE_LABELS, formatDateTime } from "@/lib/format";
+import Link from "next/link";
+import { getAdminContext } from "@/lib/admin";
+import {
+  COLLECTION_TYPE_LABELS,
+  formatDate,
+  formatDateTime,
+} from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,33 +12,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signOut } from "./actions";
-import { AddCollectionForm } from "./add-collection-form";
+import { addCollection, signOut } from "./actions";
+import { CollectionForm } from "./collection-form";
+import { DeleteButton } from "./delete-button";
 
 export const dynamic = "force-dynamic";
 
-// The admin page. Two checks, in order:
-//   1. Are you signed in at all?  (no -> sign-in page)
-//   2. Are you listed in the admins table?  (no -> told you are not an admin)
 export default async function AdminPage() {
-  const supabase = await createClient();
-
-  // getUser() asks Supabase to confirm who you are, so it cannot be faked
-  // by editing the cookie in the browser.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
-
-  // Row Level Security lets you read only your own row here, so a row
-  // coming back means you are an admin.
-  const { data: adminRow, error } = await supabase
-    .from("admins")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  const isAdmin = !error && adminRow !== null;
+  const { supabase, user, isAdmin, checkFailed } = await getAdminContext();
 
   // Only admins need the areas and the collections.
   const { data: areas } = isAdmin
@@ -43,7 +28,7 @@ export default async function AdminPage() {
   const { data: collections } = isAdmin
     ? await supabase
         .from("collections")
-        .select("id, area_id, type, place, starts_at, note")
+        .select("id, area_id, type, place, starts_at, note, updated_at")
         .order("starts_at", { ascending: false })
     : { data: null };
 
@@ -54,12 +39,16 @@ export default async function AdminPage() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {error ? "Could not check access" : isAdmin ? "Admin" : "Not an admin"}
+            {checkFailed
+              ? "Could not check access"
+              : isAdmin
+                ? "Admin"
+                : "Not an admin"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-sm">
           <p>Signed in as {user.email}.</p>
-          {error ? (
+          {checkFailed ? (
             // A failed lookup is not the same as "not an admin", so say so.
             <p>
               Something went wrong while checking whether this account is an
@@ -86,7 +75,11 @@ export default async function AdminPage() {
               <CardTitle>Add a collection</CardTitle>
             </CardHeader>
             <CardContent>
-              <AddCollectionForm areas={areas ?? []} />
+              <CollectionForm
+                areas={areas ?? []}
+                action={addCollection}
+                submitLabel="Add collection"
+              />
             </CardContent>
           </Card>
 
@@ -110,6 +103,21 @@ export default async function AdminPage() {
                         <p className="font-semibold">{collection.place}</p>
                         <p>{formatDateTime(collection.starts_at)}</p>
                         {collection.note && <p>{collection.note}</p>}
+                        <p className="text-xs text-muted-foreground">
+                          Last updated {formatDate(collection.updated_at)}
+                        </p>
+                        <div className="flex items-start gap-2 pt-3">
+                          <Link
+                            href={`/admin/collections/${collection.id}/edit`}
+                            className="inline-flex h-9 items-center justify-center rounded-[var(--radius)] border border-border px-3 text-sm font-medium"
+                          >
+                            Edit
+                          </Link>
+                          <DeleteButton
+                            id={collection.id}
+                            place={collection.place}
+                          />
+                        </div>
                       </CardContent>
                     </Card>
                   </li>

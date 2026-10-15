@@ -24,3 +24,11 @@ export function formatDateTime(value: string) {
 export function formatDate(value: string) {
   return dateOnly.format(new Date(value));
 }
+
+// The value a date-and-time box needs ("2026-10-17T14:00") for a stored
+// time, in Philippine time. The Philippines has no daylight saving, so it
+// is always exactly 8 hours ahead of UTC.
+export function toManilaInputValue(value: string) {
+  const manila = new Date(new Date(value).getTime() + 8 * 60 * 60 * 1000);
+  return manila.toISOString().slice(0, 16);
+}
