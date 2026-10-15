@@ -4,6 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // Public home page. For now it lists the areas stored in the database.
 // Ticket 03 turns each area into a link that shows its collections.
 
+// Build the page when someone visits it, not when the site is built.
+// The areas live in the database and can change, and the build should not
+// need database keys just to succeed.
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const supabase = await createClient();
   const { data: areas, error } = await supabase
