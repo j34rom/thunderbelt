@@ -5,12 +5,12 @@ dates change.
 
 **Blocked by:** 05
 
-**Status:** todo
+**Status:** done
 
-- [ ] Each collection on the admin page can be edited.
-- [ ] Editing updates "last updated" on the Schedule page.
-- [ ] Each collection can be deleted.
-- [ ] Only admins can update or delete, enforced by Row Level Security
+- [x] Each collection on the admin page can be edited.
+- [x] Editing updates "last updated" on the Schedule page.
+- [x] Each collection can be deleted.
+- [x] Only admins can update or delete, enforced by Row Level Security
       policies.
-- [ ] A signed-out visitor cannot edit or delete.
-- [ ] Works on the live URL
+- [x] A signed-out visitor cannot edit or delete.
+- [x] Works on the live URL
