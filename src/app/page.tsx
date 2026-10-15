@@ -136,6 +136,22 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           )}
         </section>
       )}
+
+      <footer className="mt-10 space-y-2 border-t border-border pt-6 text-sm text-muted-foreground">
+        <p>
+          <span className="font-medium text-foreground">About.</span> Built by
+          a student team to help neighbours find out when and where to take
+          their recyclables.
+        </p>
+        <p>
+          <span className="font-medium text-foreground">Contact.</span> Know
+          about a new pick-up or drop-off, or spot a wrong date? Email us at{" "}
+          <a href="mailto:thunderbolt691@gmail.com" className="underline">
+            thunderbolt691@gmail.com
+          </a>
+          .
+        </p>
+      </footer>
     </main>
   );
 }
