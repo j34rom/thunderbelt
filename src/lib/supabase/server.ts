@@ -21,7 +21,7 @@ export async function createClient() {
       !anonKey && "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     ].filter(Boolean);
     const similar = Object.keys(process.env).filter((name) =>
-      /supa|anon/i.test(name),
+      /supa|anon|public|base|url|key/i.test(name),
     );
     throw new Error(
       `Supabase env vars missing: ${missing.join(", ")}. ` +
