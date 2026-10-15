@@ -14,9 +14,19 @@ export async function createClient() {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
+    // TEMP DIAGNOSTIC: names only, never values. Remove once the Vercel
+    // variables are confirmed working.
+    const missing = [
+      !url && "NEXT_PUBLIC_SUPABASE_URL",
+      !anonKey && "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    ].filter(Boolean);
+    const similar = Object.keys(process.env).filter((name) =>
+      /supa|anon/i.test(name),
+    );
     throw new Error(
-      "Supabase env vars missing. Copy .env.example to .env.local and fill in " +
-        "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY from your " +
+      `Supabase env vars missing: ${missing.join(", ")}. ` +
+        `Similar names the server can see: ${similar.join(", ") || "none"}. ` +
+        "Copy .env.example to .env.local and fill in the values from your " +
         "Supabase project (click Connect). Add them in Vercel too.",
     );
   }

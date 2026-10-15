@@ -10,7 +10,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const supabase = await createClient();
+  // TEMP DIAGNOSTIC: show the setup error on the page instead of a bare 500.
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch (e) {
+    return (
+      <main className="mx-auto w-full max-w-xl px-4 py-8">
+        <p className="text-sm">
+          {e instanceof Error ? e.message : "Setup error."}
+        </p>
+      </main>
+    );
+  }
   const { data: areas, error } = await supabase
     .from("areas")
     .select("id, name")
