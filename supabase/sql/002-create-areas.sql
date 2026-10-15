@@ -23,5 +23,11 @@ create policy "anyone can read areas"
   to anon, authenticated
   using (true);
 
+-- 3. Table permission (a "grant") -------------------------------------
+-- Row Level Security is the second lock. The first is plain permission
+-- to touch the table at all, and new Supabase tables may not give it to
+-- the website's roles. Read-only on purpose: no insert, update or delete.
+grant select on areas to anon, authenticated;
+
 -- Deliberately NO insert, update or delete policy: nobody can change
 -- areas through the website. The team adds areas in SQL (next file).
