@@ -5,15 +5,15 @@ pick-ups and drop-offs for it, soonest first.
 
 **Blocked by:** 02
 
-**Status:** todo
+**Status:** done
 
-- [ ] The `collections` table exists with Row Level Security on.
+- [x] The `collections` table exists with Row Level Security on.
       Anyone can read; nobody can write yet.
-- [ ] One test collection is added through SQL.
-- [ ] Picking an area shows its upcoming collections, soonest first,
+- [x] One test collection is added through SQL.
+- [x] Picking an area shows its upcoming collections, soonest first,
       with type, place, date and time, note and "last updated".
-- [ ] Past collections are hidden.
-- [ ] An area with no collections shows "No collections posted for this
+- [x] Past collections are hidden.
+- [x] An area with no collections shows "No collections posted for this
       area yet."
-- [ ] The page is comfortable to use on a phone.
-- [ ] Works on the live URL
+- [x] The page is comfortable to use on a phone.
+- [x] Works on the live URL
