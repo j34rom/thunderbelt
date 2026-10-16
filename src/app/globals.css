@@ -7,8 +7,8 @@
   --foreground: #0a0a0a;
   --card: #ffffff;
   --card-foreground: #0a0a0a;
-  --primary: #1a1a1a;
-  --primary-foreground: #fafafa;
+  --primary: #15803d; /* recycling green */
+  --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
   --secondary-foreground: #1a1a1a;
   --muted: #f4f4f5;
@@ -27,8 +27,8 @@
     --foreground: #fafafa;
     --card: #141414;
     --card-foreground: #fafafa;
-    --primary: #fafafa;
-    --primary-foreground: #1a1a1a;
+    --primary: #4ade80;
+    --primary-foreground: #052e16;
     --secondary: #27272a;
     --secondary-foreground: #fafafa;
     --muted: #27272a;
