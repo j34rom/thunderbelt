@@ -20,6 +20,10 @@ One page. Print it or keep it on your phone. No passwords in this file.
 - [ ] Save the Supabase, Vercel and GitHub logins somewhere you can reach
       from any device (a password manager, not a text file in this repo).
 - [ ] Turn on two-step verification for GitHub, Vercel and Supabase.
+- [ ] Check the clock on the demo laptop and phone is set to "automatic". A
+      clock that is hours off keeps signing admins out.
+- [ ] Clear old wrong-password tries: in the Supabase SQL Editor, run
+      `delete from login_attempts;`
 - [ ] Ask three to five neighbours where they put their bottle and whether
       they know the next drop-off. Write down what they say.
 - [ ] Practise the pitch out loud, with a timer.
@@ -51,6 +55,8 @@ One page. Print it or keep it on your phone. No passwords in this file.
 | An area shows no collections | The date may be in the past. Past collections are hidden. Add a future one. |
 | Admin says "Not an admin" | That account is not in the `admins` table. Use the account that works, and fix the others later (README, "Set up the database"). |
 | Sign-in fails | Check the email and password. A wrong password and a wrong email show the same message on purpose. |
+| "Too many failed attempts" | Five wrong passwords for one email block it for 15 minutes. To lift it now, run `delete from login_attempts;` in the Supabase SQL Editor. |
+| Admin keeps signing you out | The device's clock is probably wrong. Set the date, time and time zone to automatic. |
 | No Wi-Fi | Use your phone's mobile data. If there is no signal at all, show screenshots of the working site and say it is live. Keep screenshots saved on your phone. |
 | The site is down and you cannot fix it | Stay calm. Explain the problem, show screenshots, and give the live URL. A working live site matters, but the problem and the person matter more. |
 
