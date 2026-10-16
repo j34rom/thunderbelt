@@ -55,6 +55,12 @@ In the Supabase dashboard, open **SQL Editor**, and run the files in
 | `005-create-admins.sql` | the admins table |
 | `006-admins-can-add-collections.sql` | admins may add collections |
 | `007-admins-can-edit-and-delete.sql` | admins may edit and delete |
+| `008-limit-public-columns.sql` | the public can no longer read `created_by` (admin ids) |
+| `009-limit-update-columns.sql` | admins may edit only the form's five fields |
+| `010-login-attempt-limit.sql` | blocks sign-in for 15 minutes after 5 wrong passwords |
+
+After `004`, delete the **TEST drop-off** from the Table Editor (or from
+the admin page) so it does not show on the live schedule.
 
 Then, under **Authentication**:
 1. Turn **off** "Allow new users to sign up" (Sign In / Providers → Email).

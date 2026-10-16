@@ -34,14 +34,20 @@ audience, just the people who keep the data right.)
    schedule stays correct when dates change.
 
 ## Screens
-1. **Schedule (home, public).** Pick an area from a list. See the
-   upcoming collections for it, soonest first. Each shows type
-   (pick-up or drop-off), place, date and time, optional note and "last
-   updated". Empty state: "No collections posted for this area yet."
-   Past collections are hidden.
-2. **Admin sign-in.** Email and password.
-3. **Admin page.** List of all collections, with a form to add one
-   (area, type, place, date and time, note), plus edit and delete for
+1. **Schedule (home, public).** Pick an area from a list. Once picked,
+   the area shows as one compact card with a "Change area" link, and its
+   schedule is right below. See the upcoming collections for it, soonest
+   first. Each shows a coloured type tag (pick-up or drop-off), place,
+   date and time, optional note and "last updated". Empty state: "No
+   collections posted for this area yet." Past collections are hidden.
+   The footer has About (the areas covered and that the schedule is kept
+   up to date), "Help us improve" (a link to the feedback survey) and
+   Contact.
+2. **Admin sign-in.** Email and password. After 5 wrong passwords for
+   one email (or 20 from one visitor) sign-in is blocked for 15 minutes.
+3. **Admin page.** List of all collections, which can be filtered by area
+   ("Showing" card with "Change area", or "All areas"), with a form to add
+   one (area, type, place, date and time, note), plus edit and delete for
    each, and sign out. Only reachable when signed in as an admin.
 
 Areas are added in SQL, not in the app.
@@ -78,6 +84,12 @@ accounts there and lists them in `admins`. Residents never sign in.
 Password login is chosen over emailed links because the free plan
 limits how many emails Supabase can send, which could lock the team out
 during a demo.
+
+Wrong passwords are counted in the database (`login_attempts`, hashed
+emails and addresses only) to slow down guessing. Anyone who knows an
+admin's email could deliberately cause a 15-minute block for that admin;
+that is a delay, not a break-in. Admin two-factor sign-in is parked in
+`docs/LATER.md`.
 
 ## Done for the demo
 On the LIVE Vercel URL, on a phone:
