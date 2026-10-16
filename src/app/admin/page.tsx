@@ -13,12 +13,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { addCollection, signOut } from "./actions";
+import { AreaFilter } from "./area-filter";
 import { CollectionForm } from "./collection-form";
 import { DeleteButton } from "./delete-button";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   const { supabase, user, isAdmin, checkFailed } = await getAdminContext();
 
   // Only admins need the areas and the collections.
@@ -26,11 +27,22 @@ export default async function AdminPage() {
   const { data: areas, error: areasError } = isAdmin
     ? await supabase.from("areas").select("id, name").order("name")
     : { data: null, error: null };
+
+  // Only trust an area id that is really in our list, as the public page does.
+  const { area: areaParam } = await searchParams;
+  const selectedArea = areas?.find(
+    (area) => typeof areaParam === "string" && area.id === areaParam,
+  );
+
+  let collectionsQuery = supabase
+    .from("collections")
+    .select("id, area_id, type, place, starts_at, note, updated_at")
+    .order("starts_at", { ascending: false });
+  if (selectedArea) {
+    collectionsQuery = collectionsQuery.eq("area_id", selectedArea.id);
+  }
   const { data: collections, error: collectionsError } = isAdmin
-    ? await supabase
-        .from("collections")
-        .select("id, area_id, type, place, starts_at, note, updated_at")
-        .order("starts_at", { ascending: false })
+    ? await collectionsQuery
     : { data: null, error: null };
 
   const areaName = new Map((areas ?? []).map((area) => [area.id, area.name]));
@@ -88,13 +100,20 @@ export default async function AdminPage() {
             <h2 className="text-lg font-semibold tracking-tight">
               All collections
             </h2>
+            {!areasError && (
+              <AreaFilter areas={areas ?? []} selectedId={selectedArea?.id} />
+            )}
             {collectionsError || areasError ? (
               <p role="alert" className="mt-3 text-sm text-destructive">
                 Could not load the schedule. Please refresh the page and try
                 again.
               </p>
             ) : !collections || collections.length === 0 ? (
-              <p className="mt-3 text-sm">Nothing added yet.</p>
+              <p className="mt-3 text-sm">
+                {selectedArea
+                  ? "Nothing added for this area yet."
+                  : "Nothing added yet."}
+              </p>
             ) : (
               <ul className="mt-3 space-y-3">
                 {collections.map((collection) => (
