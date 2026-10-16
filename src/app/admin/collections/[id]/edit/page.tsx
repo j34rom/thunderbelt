@@ -34,7 +34,10 @@ export default async function EditCollectionPage({
     );
   }
 
-  const [{ data: areas }, { data: collection }] = await Promise.all([
+  const [
+    { data: areas, error: areasError },
+    { data: collection, error: collectionError },
+  ] = await Promise.all([
     supabase.from("areas").select("id, name").order("name"),
     supabase
       .from("collections")
@@ -42,6 +45,20 @@ export default async function EditCollectionPage({
       .eq("id", id)
       .maybeSingle(),
   ]);
+
+  // A failed lookup is not the same as a missing row.
+  if (areasError || collectionError) {
+    return (
+      <main className="mx-auto w-full max-w-xl px-4 py-8">
+        <p role="alert" className="text-sm">
+          Could not load this collection. Please refresh and try again.{" "}
+          <Link href="/admin" className="underline">
+            Back
+          </Link>
+        </p>
+      </main>
+    );
+  }
 
   // A made-up or already-deleted id.
   if (!collection) notFound();

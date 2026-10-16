@@ -46,6 +46,9 @@ audience, just the people who keep the data right.)
 
 Areas are added in SQL, not in the app.
 
+Every page is sent with security headers (no framing by other sites,
+no content-type guessing, strict referrer policy).
+
 ## Data
 All tables have Row Level Security on.
 
@@ -58,7 +61,9 @@ All tables have Row Level Security on.
 - `id`, `area_id` (links to `areas`), `type` (`pickup` or `dropoff`),
   `place` (text), `starts_at` (date and time), `note` (optional),
   `created_at`, `updated_at`, `created_by` (the admin's user id).
-- Read: anyone. Insert, update, delete: only admins.
+- Read: anyone, but only the columns the public page shows (`created_by`
+  stays private so admin ids are not exposed). Insert, update, delete:
+  only admins, and admins may edit only the form's five fields.
 
 **`admins`**
 - `user_id` (links to the signed-in user).

@@ -22,15 +22,16 @@ export default async function AdminPage() {
   const { supabase, user, isAdmin, checkFailed } = await getAdminContext();
 
   // Only admins need the areas and the collections.
-  const { data: areas } = isAdmin
+  // A failed lookup is not the same as an empty table, so keep the errors.
+  const { data: areas, error: areasError } = isAdmin
     ? await supabase.from("areas").select("id, name").order("name")
-    : { data: null };
-  const { data: collections } = isAdmin
+    : { data: null, error: null };
+  const { data: collections, error: collectionsError } = isAdmin
     ? await supabase
         .from("collections")
         .select("id, area_id, type, place, starts_at, note, updated_at")
         .order("starts_at", { ascending: false })
-    : { data: null };
+    : { data: null, error: null };
 
   const areaName = new Map((areas ?? []).map((area) => [area.id, area.name]));
 
@@ -87,7 +88,12 @@ export default async function AdminPage() {
             <h2 className="text-lg font-semibold tracking-tight">
               All collections
             </h2>
-            {!collections || collections.length === 0 ? (
+            {collectionsError || areasError ? (
+              <p role="alert" className="mt-3 text-sm text-destructive">
+                Could not load the schedule. Please refresh the page and try
+                again.
+              </p>
+            ) : !collections || collections.length === 0 ? (
               <p className="mt-3 text-sm">Nothing added yet.</p>
             ) : (
               <ul className="mt-3 space-y-3">
