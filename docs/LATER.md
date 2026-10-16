@@ -29,6 +29,22 @@ low participation and inefficient waste management.
 - **Mobile numbers and SMS reminders.**
 - **Queue tracking** for long drop-off lines.
 
+## Parked security ideas
+From the security review. None is urgent; the site is safe to demo
+without them.
+
+- **Admin two-factor sign-in.** Supabase supports an authenticator-app
+  code (TOTP). Needs a code-entry step after the password. Protects the
+  admin accounts if a password leaks.
+- **Admin check on the edit action.** `addCollection` and
+  `deleteCollection` check "is this an admin" in the app; `updateCollection`
+  relies only on the database policy. Add the same `requireAdmin` check
+  there without changing the form.
+- **Fuller Content-Security-Policy.** Today only `frame-ancestors 'none'`
+  is set. A full policy (scripts, network calls, forms) needs a per-page
+  nonce in `src/proxy.ts`. Try it in report-only mode first, and switch to
+  enforcing once the browser console is clean.
+
 ## Task for the team (not code)
 Ask the barangay hall or the truck crew who runs the pick-up and
 drop-off, and how they announce changes. About 10 minutes, and it could
