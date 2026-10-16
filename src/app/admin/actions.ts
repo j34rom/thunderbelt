@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAdminContext } from "@/lib/admin";
+import {
+  BLOCKED_MESSAGE,
+  isLoginBlocked,
+  loginKeys,
+  recordLoginFailure,
+} from "@/lib/login-limit";
 import { createClient } from "@/lib/supabase/server";
 
 export type SignInState = { error: string | null };
@@ -21,9 +27,25 @@ export async function signIn(
   }
 
   const supabase = await createClient();
+  const keys = await loginKeys(email);
+
+  // Stop guessing before it reaches Supabase's password check.
+  if (await isLoginBlocked(supabase, keys)) {
+    return { error: BLOCKED_MESSAGE };
+  }
+
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    // Supabase has its own limit too. Say so instead of "wrong password".
+    if (error.code === "over_request_rate_limit") {
+      return { error: BLOCKED_MESSAGE };
+    }
+    // Only real wrong-password answers count. A network or server fault
+    // must not lock someone out.
+    if (error.code === "invalid_credentials") {
+      await recordLoginFailure(supabase, keys);
+    }
     // Same message for a wrong email and a wrong password, on purpose.
     return { error: "Email or password is incorrect." };
   }
