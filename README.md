@@ -58,6 +58,7 @@ In the Supabase dashboard, open **SQL Editor**, and run the files in
 | `008-limit-public-columns.sql` | the public can no longer read `created_by` (admin ids) |
 | `009-limit-update-columns.sql` | admins may edit only the form's five fields |
 | `010-login-attempt-limit.sql` | blocks sign-in for 15 minutes after 5 wrong passwords |
+| `011-login-attempts-explicit-policy.sql` | writes down that nobody can use `login_attempts` directly |
 
 After `004`, delete the **TEST drop-off** from the Table Editor (or from
 the admin page) so it does not show on the live schedule.

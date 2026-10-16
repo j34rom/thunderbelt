@@ -77,6 +77,14 @@ All tables have Row Level Security on.
   the database checks "is this person an admin?"). Write: nobody through
   the website (rows are added in SQL).
 
+**`login_attempts`**
+- `id`, `key` (a one-way hash of an email or visitor address),
+  `created_at`. One row per wrong password.
+- Read and write: nobody through the website, and an explicit policy says
+  so. Only two database functions (`login_blocked`,
+  `login_record_failure`) use it, to block sign-in for 15 minutes after
+  5 wrong passwords.
+
 ## Login
 Supabase Auth with email and password, for admins only. Public sign-ups
 are turned off in the Supabase dashboard; the team creates the admin
@@ -102,7 +110,7 @@ On the LIVE Vercel URL, on a phone:
 - [ ] They edit and delete a collection.
 - [ ] Someone who is not an admin cannot add, edit or delete (checked
       by trying while signed out).
-- [ ] RLS is on for all three tables (no warnings in the Table Editor).
+- [ ] RLS is on for all four tables (no warnings in the Table Editor).
 - [ ] No service_role or `sb_secret_` key anywhere; `.env.local` is not
       committed.
 
