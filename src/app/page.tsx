@@ -200,8 +200,22 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       <footer className="mt-10 space-y-2 border-t border-border pt-6 text-sm text-muted-foreground">
         <p>
           <span className="font-medium text-foreground">About.</span> Built by
-          a student team to help neighbours find out when and where to take
-          their recyclables.
+          a student team for neighbours in North Fundador, South Fundador and
+          Poblacion, Leganes. We keep the schedule up to date, and every
+          collection shows when it was last updated.
+        </p>
+        <p>
+          <span className="font-medium text-foreground">Help us improve.</span>{" "}
+          Tell us what works and what doesn&apos;t in a 1-minute survey.{" "}
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLScJC6Kz-k9Pfb4fI1MQutjmxgHskR4do9gE4ArjdDsY6P35zw/viewform?usp=dialog"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            Take the survey
+          </a>
+          .
         </p>
         <p>
           <span className="font-medium text-foreground">Contact.</span> Know
