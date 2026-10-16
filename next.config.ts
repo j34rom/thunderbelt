@@ -12,6 +12,28 @@ const nextConfig: NextConfig = {
   //
   // Turn them back on later if you want them, and read:
   // https://nextjs.org/docs/messages/blocking-prerender-dynamic
+  //
+  // Security headers on every page. The first two stop other websites from
+  // putting our pages (especially the admin sign-in) inside a hidden frame
+  // to trick someone into clicking. "nosniff" stops browsers guessing file
+  // types, and the referrer policy limits what other sites learn about
+  // where a visitor came from.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+        ],
+      },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {

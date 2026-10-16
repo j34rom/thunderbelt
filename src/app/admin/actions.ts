@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getAdminContext } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export type SignInState = { error: string | null };
@@ -87,6 +88,16 @@ async function requireUser() {
   return { supabase, user };
 }
 
+// A second lock for adding and deleting: signed in AND listed as an admin.
+// Row Level Security in the database still checks again. Returns null for
+// anyone who is not an admin.
+async function requireAdmin() {
+  const { supabase, user, isAdmin } = await getAdminContext();
+  return isAdmin ? { supabase, user } : null;
+}
+
+const NOT_ADMIN = "Only admins can do this.";
+
 const SAVE_FAILED = "Could not save. Make sure you are signed in as an admin.";
 
 // Adds one collection. Row Level Security only lets admins insert.
@@ -97,10 +108,12 @@ export async function addCollection(
   const form = readCollectionForm(formData);
   if (!form.values) return { error: form.error, saved: false };
 
-  const { supabase, user } = await requireUser();
-  const { error } = await supabase
+  const admin = await requireAdmin();
+  if (!admin) return { error: NOT_ADMIN, saved: false };
+
+  const { error } = await admin.supabase
     .from("collections")
-    .insert({ ...form.values, created_by: user.id });
+    .insert({ ...form.values, created_by: admin.user.id });
 
   if (error) return { error: SAVE_FAILED, saved: false };
 
@@ -144,8 +157,10 @@ export async function deleteCollection(
 ): Promise<DeleteState> {
   const id = String(formData.get("id") ?? "");
 
-  const { supabase } = await requireUser();
-  const { data, error } = await supabase
+  const admin = await requireAdmin();
+  if (!admin) return { error: NOT_ADMIN };
+
+  const { data, error } = await admin.supabase
     .from("collections")
     .delete()
     .eq("id", id)
