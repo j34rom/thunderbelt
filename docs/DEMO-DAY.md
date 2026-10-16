@@ -20,6 +20,10 @@ One page. Print it or keep it on your phone. No passwords in this file.
 - [ ] Save the Supabase, Vercel and GitHub logins somewhere you can reach
       from any device (a password manager, not a text file in this repo).
 - [ ] Turn on two-step verification for GitHub, Vercel and Supabase.
+- [ ] In Supabase, check Authentication → Sign In / Providers: "Allow new
+      users to sign up" is **off**, and the minimum password length is 12.
+      Check Authentication → Rate Limits is not left at a very high value.
+      (The site's own login limit only covers the sign-in form.)
 - [ ] Check the clock on the demo laptop and phone is set to "automatic". A
       clock that is hours off keeps signing admins out.
 - [ ] Clear old wrong-password tries: in the Supabase SQL Editor, run

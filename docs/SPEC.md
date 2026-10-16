@@ -43,8 +43,10 @@ audience, just the people who keep the data right.)
    The footer has About (the areas covered and that the schedule is kept
    up to date), "Help us improve" (a link to the feedback survey) and
    Contact.
-2. **Admin sign-in.** Email and password. After 5 wrong passwords for
-   one email (or 20 from one visitor) sign-in is blocked for 15 minutes.
+2. **Admin sign-in.** Email and password. On the site's sign-in form,
+   after 5 wrong passwords for one email (or 20 from one visitor) sign-in
+   is blocked for 15 minutes. Supabase applies its own limits to
+   sign-in requests made directly to it (see Login).
 3. **Admin page.** List of all collections, which can be filtered by area
    ("Showing" card with "Change area", or "All areas"), with a form to add
    one (area, type, place, date and time, note), plus edit and delete for
@@ -96,8 +98,15 @@ during a demo.
 Wrong passwords are counted in the database (`login_attempts`, hashed
 emails and addresses only) to slow down guessing. Anyone who knows an
 admin's email could deliberately cause a 15-minute block for that admin;
-that is a delay, not a break-in. Admin two-factor sign-in is parked in
-`docs/LATER.md`.
+that is a delay, not a break-in.
+
+This counter only covers the site's own sign-in form. Anyone with the
+public key can also send sign-in requests straight to Supabase, which
+skips our counter and is limited only by Supabase's own rate limits. So
+in the Supabase dashboard: lower the sign-in rate limits (Authentication
+→ Rate Limits), require passwords of at least 12 characters, keep "Allow
+new users to sign up" off, and give admins long, unique passwords. Admin
+two-factor sign-in is parked in `docs/LATER.md`.
 
 ## Done for the demo
 On the LIVE Vercel URL, on a phone:
